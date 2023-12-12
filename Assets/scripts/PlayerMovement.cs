@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour
     public Animator anim;
     public Transform cam;
 
+    public float health = 6;
+
     public float speed = 6;
     Vector3 velocity;
     public float gravity = -9.81f;
@@ -30,7 +32,6 @@ public class PlayerMovement : MonoBehaviour
     {
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2;
