@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -14,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 velocity;
     public float gravity = -9.81f;
     public float jumpHeight = 5;
-
+    public float jumps;
     public Transform groundCheck;
     public float groundDistance = 0.3f;
     public LayerMask groundMask;
@@ -23,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
     float turnSmoothVelocity;
 
     bool isGrounded;
-    // Update is called once per frame
+    
      void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -36,15 +37,28 @@ public class PlayerMovement : MonoBehaviour
         {
             velocity.y = -2;
         }
+        if (isGrounded)
+        {
+            jumps = 1;
+            anim.SetBool("DoubleJump", false);
+            anim.SetBool("CanDJ", true);
+
+        }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
-
+        
         if (Input.GetButtonDown("Jump") && isGrounded == true)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-            
+        }
+        else if (Input.GetButtonDown("Jump") && jumps > 0)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            jumps--;
+            anim.SetBool("DoubleJump", true);
+            StartCoroutine(wait());      
         }
         if (isGrounded == false)
         {
@@ -54,6 +68,7 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetBool("falling", false);
         }
+
 
 
         velocity.y += gravity * Time.deltaTime;
@@ -77,6 +92,12 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             anim.SetBool("Run", false);
-        }
+        }       
+    }
+    private IEnumerator wait()
+    {
+        yield return new WaitForSeconds(0.2f);
+        anim.SetBool("CanDJ", false);
+
     }
 }
