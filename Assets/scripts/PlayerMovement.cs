@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -11,6 +12,8 @@ public class PlayerMovement : MonoBehaviour
 
     public float health = 6;
 
+    public float diveDistance;
+
     public float speed = 6;
     Vector3 velocity;
     public float gravity = -9.81f;
@@ -19,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float groundDistance = 0.3f;
     public LayerMask groundMask;
+    public LayerMask enemy;
 
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
@@ -31,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-
+        
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         if (isGrounded && velocity.y < 0)
         {
@@ -68,6 +72,13 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetBool("falling", false);
         }
+        if (Input.GetKeyDown("r"))
+        {
+            velocity.y = Mathf.Sqrt(diveDistance * -2f * gravity);
+            
+
+        }
+
 
 
 
@@ -99,5 +110,12 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         anim.SetBool("CanDJ", false);
 
+    }
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.layer == 6)
+        {
+            health--;
+        }
     }
 }

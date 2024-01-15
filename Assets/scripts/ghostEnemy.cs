@@ -17,7 +17,8 @@ public class ghostEnemy : MonoBehaviour
     public float angle;
 
     public bool canSeePlayer;
-
+    public bool freeze;
+    public Vector3 spawn;
 
     public LayerMask targetMask;
     public LayerMask obstructionMask;
@@ -25,15 +26,21 @@ public class ghostEnemy : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         StartCoroutine(FOVRoutine());
+        spawn = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (canSeePlayer)
+        if (canSeePlayer && freeze == false)
         {
             lookAtPlayer();
             moveTowardsPlayer();
+        }
+        else
+        {
+            float step = speed * Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, spawn, step);
         }
     }
     void lookAtPlayer()
@@ -84,5 +91,26 @@ public class ghostEnemy : MonoBehaviour
         }
         else if (canSeePlayer)
             canSeePlayer = false;
+    }
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.layer == 7)
+        {
+            freeze = true;
+            StartCoroutine(freezewait());
+        }
+    }
+    IEnumerator freezewait()
+    {
+        yield return new WaitForSeconds(2);
+        freeze = false;
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 7)
+        {
+            freeze = true;
+            StartCoroutine(freezewait());
+        }
     }
 }
