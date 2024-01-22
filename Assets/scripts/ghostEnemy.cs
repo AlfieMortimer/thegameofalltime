@@ -7,7 +7,7 @@ using UnityEngine;
 public class ghostEnemy : MonoBehaviour
 {
     public GameObject player;
-    Animator anim;
+    public Animator anim;
 
     public float speed;
 
@@ -24,6 +24,7 @@ public class ghostEnemy : MonoBehaviour
     public LayerMask obstructionMask;
     void Start()
     {
+        anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
         StartCoroutine(FOVRoutine());
         spawn = transform.position;
@@ -37,7 +38,7 @@ public class ghostEnemy : MonoBehaviour
             lookAtPlayer();
             moveTowardsPlayer();
         }
-        else
+        else if (canSeePlayer == false && freeze == false) 
         {
             float step = speed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, spawn, step);
@@ -97,13 +98,15 @@ public class ghostEnemy : MonoBehaviour
         if (collision.gameObject.layer == 7)
         {
             freeze = true;
+            anim.SetBool("attack", true);
             StartCoroutine(freezewait());
         }
     }
     IEnumerator freezewait()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         freeze = false;
+        anim.SetBool("attack", false);
     }
     private void OnCollisionEnter(Collision collision)
     {

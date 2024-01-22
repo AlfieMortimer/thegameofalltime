@@ -28,14 +28,21 @@ public class PlayerMovement : MonoBehaviour
     float turnSmoothVelocity;
 
     bool isGrounded;
-    
+    bool movementlock = false;
      void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
     void Update()
     {
-        
+        if (health <= 0)
+        {
+            movementlock = true;
+            anim.SetBool("isAlive", false);
+        }
+
+
+
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         if (isGrounded && velocity.y < 0)
         {
@@ -53,11 +60,11 @@ public class PlayerMovement : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
         
-        if (Input.GetButtonDown("Jump") && isGrounded == true)
+        if (Input.GetButtonDown("Jump") && isGrounded == true && movementlock == false)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
-        else if (Input.GetButtonDown("Jump") && jumps > 0)
+        else if (Input.GetButtonDown("Jump") && jumps > 0 && movementlock == false)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
             jumps--;
@@ -72,12 +79,6 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetBool("falling", false);
         }
-        if (Input.GetKeyDown("r"))
-        {
-            velocity.y = Mathf.Sqrt(diveDistance * -2f * gravity);
-            
-
-        }
 
 
 
@@ -87,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
 
 
-        if (direction.magnitude >= 0.1f)
+        if (direction.magnitude >= 0.1f && movementlock == false)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
@@ -116,6 +117,13 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == 6)
         {
             health--;
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 8)
+        {
+            health = 0;
         }
     }
 }
