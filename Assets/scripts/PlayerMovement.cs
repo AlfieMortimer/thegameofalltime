@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -10,7 +11,9 @@ public class PlayerMovement : MonoBehaviour
     public Animator anim;
     public Transform cam;
 
-    public float health = 6;
+    public string endscene;
+
+    public static float health = 100;
 
     public float diveDistance;
 
@@ -116,14 +119,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.gameObject.layer == 6)
         {
-            health--;
+            health = health - 25;
         }
-    }
-    private void OnCollisionEnter(Collision collision)
-    {
         if (collision.gameObject.layer == 8)
         {
             health = 0;
+        }
+        if (collision.gameObject.layer == 9)
+        {
+            SceneManager.LoadScene(endscene);
         }
     }
 }
