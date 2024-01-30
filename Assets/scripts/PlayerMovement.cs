@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
 
     public float diveDistance;
 
+    bool ran = false;
+
     public float speed = 6;
     Vector3 velocity;
     public float gravity = -9.81f;
@@ -38,10 +40,15 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-        if (health <= 0)
+
+
+        if (health <= 0 && ran == false)
         {
             movementlock = true;
             anim.SetBool("isAlive", false);
+            FindObjectOfType<soundmanager>().Play("Death");
+            ran = true;
+
         }
 
 
